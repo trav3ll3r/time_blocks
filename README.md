@@ -10,7 +10,7 @@
 * A single-day view of 24 (60 min) time blocks with events 
 
 ## What is it not?
-* A fully-pledged calendar view with management of overlapping events
+* A full-fledged calendar view with management of overlapping events
 
 ## How to use it
 * Library builds an AAR file using Gradle (e.g. "timeblocks-release-0.2.0.aar")
