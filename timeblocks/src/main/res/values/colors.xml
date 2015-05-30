@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- CALENDAR COLOURS -->
+    <color name="default_background">#ffffff</color>
+    <color name="calendar_any_day_background">@color/default_background</color>
+    <color name="calendar_today_background">#22ff8800</color>
+
+    <color name="calendar_lesson_free">@android:color/transparent</color>
+    <color name="calendar_lesson_confirmed">#005500</color>
+    <color name="calendar_lesson_completed">#404040</color>
+    <color name="calendar_lesson_cancelled">#604040</color>
+
+    <color name="calendar_row_background">#77ff8800</color>
+    <color name="calendar_row_text">@color/default_background</color>
+    <color name="calendar_row_border">#77ff8800</color>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<au.com.traveller.licence_please.layout.SlidingRelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null">
+
+    <TextView
+            android:id="@+id/time_block_event"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:text="@string/tb_example_event"
+            android:textSize="@dimen/text_size_m"
+            android:textColor="#ff0"
+            android:padding="@dimen/tb_item_padding"
+            android:gravity="center_vertical"/>
+
+</au.com.traveller.licence_please.layout.SlidingRelativeLayout>

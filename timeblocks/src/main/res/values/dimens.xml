@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TIME-BLOCK VALUES  -->
+    <dimen name="tb_block_indicator_width_dip">80dp</dimen>
+    <dimen name="tb_block_hour_height_dip">20dp</dimen>
+    <dimen name="tb_item_padding">20dp</dimen>
+
+    <!-- FONT SIZES  -->
+    <dimen name="text_size_s">12sp</dimen>
+    <dimen name="text_size_m">14sp</dimen>
+</resources>

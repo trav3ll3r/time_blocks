@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/tb_guideline_background">
+
+    <TextView
+            android:id="@+id/time_block_row"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/calendar_row_background"
+            android:text="@string/tb_example_block_mark"
+            android:textSize="@dimen/text_size_s"
+            android:textColor="@color/calendar_row_text"
+            android:padding="@dimen/tb_item_padding"
+            android:gravity="center_vertical"/>
+
+</LinearLayout>
