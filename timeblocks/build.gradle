@@ -4,9 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-//        classpath 'com.android.tools.build:gradle:1.1.1'
         // replace with the current version of the Android plugin
-//        classpath 'com.android.tools.build:gradle:1.2.2'
         classpath 'com.android.tools.build:gradle:1.2.3'
         // replace with the current version of the android-apt plugin
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
@@ -14,11 +12,6 @@ buildscript {
 }
 apply plugin: 'com.android.library'
 apply plugin: 'android-apt'
-
-//repositories {
-//    jcenter()
-//    mavenCentral()
-//}
 
 def androidAnnotationsVersion = '3.3.1';
 
@@ -62,7 +55,6 @@ android.libraryVariants.all {
         variant.outputs.each { output ->
             def file = output.outputFile
             def ver = android.defaultConfig.versionName
-//            def ver = '0.1.0'
             output.outputFile = new File(file.parent, file.name.replace(".aar", "-" + ver + ".aar"))
         }
 }
