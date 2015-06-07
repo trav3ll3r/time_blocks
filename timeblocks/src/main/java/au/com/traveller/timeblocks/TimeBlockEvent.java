@@ -1,8 +1,9 @@
 package au.com.traveller.timeblocks;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TimeBlockEvent
+public class TimeBlockEvent implements Serializable
 {
     private Date startTime;
     private Date endTime;
