@@ -6,7 +6,9 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -65,9 +67,10 @@ public class TimeBlocksFragment extends Fragment
 
         for (TimeBlockEvent event : _eventBlocks)
         {
-            View eventView = getEventView(getActivity(), _timeBlockEvents, event);
+            View eventView = getCompleteEventRow(getActivity(), _timeBlockEvents, event);
+//            View eventView = getEventView(getActivity(), _timeBlockEvents, event);
 
-            eventView.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
+//            eventView.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
 
             this._timeBlockEvents.addView(eventView);
         }
@@ -90,21 +93,39 @@ public class TimeBlocksFragment extends Fragment
         return new ArrayList<TimeBlockEvent>();
     }
 
-    //TODO: @Override
-    protected View getEventView(Context context, ViewGroup parentView, TimeBlockEvent event)
+    private View getCompleteEventRow(Context context, ViewGroup parentView, TimeBlockEvent event)
     {
-        LinearLayout eventView = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_event, parentView, false);
+        ViewGroup row = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_full_event, parentView, false);
 
         int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
         eventHeight = (int) (eventHeight * event.durationInHours());
         event.setHeightInDip(eventHeight);
 
-        eventView.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
+        row.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
 
-        TextView tv = (TextView) eventView.findViewById(R.id.time_block_event);
+        FrameLayout frame = (FrameLayout) row.findViewById(R.id.frame_time_block_event);
+        frame.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
+        // ADD THE EVENT CONTENT VIEW
+        frame.addView(getEventView(context, row, event));
+
+        return row;
+    }
+
+    //TODO: @Override
+    protected View getEventView(Context context, ViewGroup parentView, TimeBlockEvent event)
+    {
+        LinearLayout eventContent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_event_content, parentView, false);
+
+//        int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
+//        eventHeight = (int) (eventHeight * event.durationInHours());
+//        event.setHeightInDip(eventHeight);
+//
+//        eventContent.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
+
+        TextView tv = (TextView) eventContent.findViewById(R.id.time_block_event_label);
         tv.setText(event.getEventLabel());
         tv.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
 
-        return eventView;
+        return eventContent;
     }
 }

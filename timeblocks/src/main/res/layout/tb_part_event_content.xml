@@ -2,13 +2,12 @@
 
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null">
 
     <TextView
-            android:id="@+id/time_block_event"
+            android:id="@+id/time_block_event_label"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@null"
