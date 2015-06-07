@@ -63,15 +63,12 @@ public class TimeBlocksFragment extends Fragment
     private void renderTimeBlockEvents()
     {
         this._eventBlocks = this.generateTimeBlockEvents();
-        this._eventBlocks = TimeBlockUtil.fillEventGaps(this._eventBlocks);
+//        this._eventBlocks = TimeBlockUtil.fillEventGaps(this._eventBlocks);
+        this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks);
 
         for (TimeBlockEvent event : _eventBlocks)
         {
             View eventView = getCompleteEventRow(getActivity(), _timeBlockEvents, event);
-//            View eventView = getEventView(getActivity(), _timeBlockEvents, event);
-
-//            eventView.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
-
             this._timeBlockEvents.addView(eventView);
         }
     }
@@ -105,8 +102,13 @@ public class TimeBlocksFragment extends Fragment
 
         FrameLayout frame = (FrameLayout) row.findViewById(R.id.frame_time_block_event);
         frame.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
+
+        // SET CONTENT BACKGROUND
+        View contentView = getEventView(context, row, event);
+        contentView.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
+
         // ADD THE EVENT CONTENT VIEW
-        frame.addView(getEventView(context, row, event));
+        frame.addView(contentView);
 
         return row;
     }

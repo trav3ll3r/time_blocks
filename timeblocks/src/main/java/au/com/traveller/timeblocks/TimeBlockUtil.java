@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TimeBlockUtil
@@ -77,6 +78,83 @@ public class TimeBlockUtil
             }
 
             prev = event;
+            result.add(event);
+        }
+
+        return result;
+    }
+
+    public static List<TimeBlockEvent> generateEmptyBlocks(List<TimeBlockEvent> events)
+    {
+        List<TimeBlockEvent> result = new ArrayList<TimeBlockEvent>();
+
+        TimeBlockEvent prev = null;
+        for (TimeBlockEvent event : events)
+        {
+            if (prev != null)
+            {
+                int gapInMinutes = TimeBlockUtil.gapInMinutes(prev, event);
+                if (gapInMinutes > 1)
+                {
+                    TimeBlockEvent gap = new TimeBlockEvent(prev.getEndTime(), event.getStartTime());
+                    result.add(gap);
+                }
+            }
+            else
+            {
+                // CHECK IF GAP IS NEEDED BEFORE MIDNIGHT AND FIRST EVENT
+                Calendar midnight = Calendar.getInstance();
+                midnight.setTime(event.getStartTime());
+                midnight.set(Calendar.HOUR_OF_DAY, 0);
+                midnight.set(Calendar.MINUTE, 0);
+                midnight.set(Calendar.SECOND, 0);
+                midnight.set(Calendar.MILLISECOND, 0);
+                TimeBlockEvent gap = event.createGapBeforeStart(midnight.getTime());
+                if (gap.durationInMinutes() > 1)
+                {
+                    result.add(gap);
+                }
+            }
+
+            prev = event;
+            result.add(event);
+        }
+
+        return result;
+    }
+
+    public static List<TimeBlockEvent> generateBlocksInside(Calendar calStart, Calendar calEnd)
+    {
+        List<TimeBlockEvent> result = new ArrayList<TimeBlockEvent>();
+
+        Date blockStartTime;
+        Date blockEndTime;
+        TimeBlockEvent event;
+        int startMinutes;
+        int minutesToCompleteBlock;
+
+        while (calStart.getTimeInMillis() < calEnd.getTimeInMillis())
+        {
+            minutesToCompleteBlock = 60;
+
+            startMinutes = calStart.get(Calendar.MINUTE);
+
+            if (startMinutes > 0 && startMinutes < minutesToCompleteBlock)
+            {
+                minutesToCompleteBlock -= startMinutes;
+            }
+
+            blockStartTime = calStart.getTime();
+            calStart.add(Calendar.MINUTE, minutesToCompleteBlock);
+
+            if (calStart.getTimeInMillis() > calEnd.getTimeInMillis())
+            {
+                calStart = calEnd;
+            }
+
+            blockEndTime = calStart.getTime();
+
+            event = new TimeBlockEvent(blockStartTime, blockEndTime);
             result.add(event);
         }
 

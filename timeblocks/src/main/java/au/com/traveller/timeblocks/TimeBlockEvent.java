@@ -1,6 +1,7 @@
 package au.com.traveller.timeblocks;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeBlockEvent implements Serializable
@@ -17,6 +18,11 @@ public class TimeBlockEvent implements Serializable
         this.startTime          = startTime;
         this.endTime            = endTime;
         this.backgroundColour   = R.color.calendar_lesson_free;
+    }
+
+    public TimeBlockEvent(Calendar startCalendar, Calendar endCalendar)
+    {
+        this(startCalendar.getTime(), endCalendar.getTime());
     }
 
     public String getEventLabel() {
