@@ -13,6 +13,37 @@ public class GenerateBlocksInsideTest extends InstrumentationTestCase
         super.setUp();
     }
 
+    public void test_null_start() throws Exception
+    {
+        this.setName("start null, 0 blocks");
+
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.set(2015, 6, 7, 15, 0, 0);
+        calEnd.set(Calendar.MILLISECOND, 0);
+        List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(null, calEnd);
+
+        assertEquals(0, result.size());
+    }
+
+    public void test_null_end() throws Exception
+    {
+        this.setName("end null, 0 blocks");
+
+        Calendar calStart = Calendar.getInstance();
+        calStart.set(2015, 6, 7, 5, 0, 0);
+        calStart.set(Calendar.MILLISECOND, 0);
+        List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(calStart, null);
+
+        assertEquals(0, result.size());
+    }
+
+    public void test_null_both() throws Exception
+    {
+        this.setName("both null, 0 blocks");
+        List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(null, null);
+        assertEquals(0, result.size());
+    }
+
     public void test_0000_to_0800() throws Exception
     {
         this.setName("00:00 - 08:00, 8 blocks");
@@ -59,7 +90,38 @@ public class GenerateBlocksInsideTest extends InstrumentationTestCase
         assertEquals(16.0, result.get(1).durationInMinutes());
     }
 
-    public void test_2250_to_0030() throws Exception
+    public void test_2250_to_0000() throws Exception
+    {
+        this.setName("22:50 - 00:00, 2 blocks");
+        Calendar calStart = Calendar.getInstance();
+        calStart.set(2015, 6, 7, 22, 50, 0);
+        calStart.set(Calendar.MILLISECOND, 0);
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.set(2015, 6, 8, 0, 0, 0);
+        calEnd.set(Calendar.MILLISECOND, 0);
+        List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(calStart, calEnd);
+
+        assertEquals(2, result.size());
+        assertEquals(10.0, result.get(0).durationInMinutes());
+        assertEquals(60.0, result.get(1).durationInMinutes());
+    }
+
+    public void test_2307_to_0000() throws Exception
+    {
+        this.setName("23:07 - 00:00, 2 blocks");
+        Calendar calStart = Calendar.getInstance();
+        calStart.set(2015, 6, 7, 23, 7, 0);
+        calStart.set(Calendar.MILLISECOND, 0);
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.set(2015, 6, 8, 0, 0, 0);
+        calEnd.set(Calendar.MILLISECOND, 0);
+        List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(calStart, calEnd);
+
+        assertEquals(1, result.size());
+        assertEquals(53.0, result.get(0).durationInMinutes());
+    }
+
+    public void test_2310_to_0030() throws Exception
     {
         this.setName("23:10 - 00:30, 2 blocks");
         Calendar calStart = Calendar.getInstance();
@@ -70,8 +132,9 @@ public class GenerateBlocksInsideTest extends InstrumentationTestCase
         calEnd.set(Calendar.MILLISECOND, 0);
         List<TimeBlockEvent> result = TimeBlockUtil.generateBlocksInside(calStart, calEnd);
 
-        assertEquals(1, result.size());
-        assertEquals(50, result.get(0).durationInMinutes());
+        assertEquals(2, result.size());
+        assertEquals(50.0, result.get(0).durationInMinutes());
+        assertEquals(30.0, result.get(1).durationInMinutes());
     }
 
     public void test_1601_to_1700() throws Exception

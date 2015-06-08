@@ -133,29 +133,32 @@ public class TimeBlockUtil
         int startMinutes;
         int minutesToCompleteBlock;
 
-        while (calStart.getTimeInMillis() < calEnd.getTimeInMillis())
+        if (calStart != null && calEnd != null)
         {
-            minutesToCompleteBlock = 60;
-
-            startMinutes = calStart.get(Calendar.MINUTE);
-
-            if (startMinutes > 0 && startMinutes < minutesToCompleteBlock)
+            while (calStart.getTimeInMillis() < calEnd.getTimeInMillis())
             {
-                minutesToCompleteBlock -= startMinutes;
+                minutesToCompleteBlock = 60;
+
+                startMinutes = calStart.get(Calendar.MINUTE);
+
+                if (startMinutes > 0 && startMinutes < minutesToCompleteBlock)
+                {
+                    minutesToCompleteBlock -= startMinutes;
+                }
+
+                blockStartTime = calStart.getTime();
+                calStart.add(Calendar.MINUTE, minutesToCompleteBlock);
+
+                if (calStart.getTimeInMillis() > calEnd.getTimeInMillis())
+                {
+                    calStart = calEnd;
+                }
+
+                blockEndTime = calStart.getTime();
+
+                event = new TimeBlockEvent(blockStartTime, blockEndTime);
+                result.add(event);
             }
-
-            blockStartTime = calStart.getTime();
-            calStart.add(Calendar.MINUTE, minutesToCompleteBlock);
-
-            if (calStart.getTimeInMillis() > calEnd.getTimeInMillis())
-            {
-                calStart = calEnd;
-            }
-
-            blockEndTime = calStart.getTime();
-
-            event = new TimeBlockEvent(blockStartTime, blockEndTime);
-            result.add(event);
         }
 
         return result;
