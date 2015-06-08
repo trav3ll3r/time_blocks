@@ -123,6 +123,12 @@ public class TimeBlockUtil
         return result;
     }
 
+    /**
+     * Generated 60-minutes TimeBlocks between {@code calStart} and {@code calEnd}
+     * @param calStart Calendar object (not null)
+     * @param calEnd Calendar object (not null, not before {@code calStart})
+     * @return A list of time blocks (or empty list if {@code calStart} and {@code calEnd} are invalid)
+     */
     public static List<TimeBlockEvent> generateBlocksInside(Calendar calStart, Calendar calEnd)
     {
         List<TimeBlockEvent> result = new ArrayList<TimeBlockEvent>();
@@ -133,32 +139,40 @@ public class TimeBlockUtil
         int startMinutes;
         int minutesToCompleteBlock;
 
-        if (calStart != null && calEnd != null)
+        // HANDLE INVALID USAGES
+        if (calStart == null || calEnd == null)
         {
-            while (calStart.getTimeInMillis() < calEnd.getTimeInMillis())
+            return result;
+        }
+
+        if (calStart.getTimeInMillis() >= calEnd.getTimeInMillis())
+        {
+            return result;
+        }
+
+        while (calStart.getTimeInMillis() < calEnd.getTimeInMillis())
+        {
+            minutesToCompleteBlock = 60;
+
+            startMinutes = calStart.get(Calendar.MINUTE);
+
+            if (startMinutes > 0 && startMinutes < minutesToCompleteBlock)
             {
-                minutesToCompleteBlock = 60;
-
-                startMinutes = calStart.get(Calendar.MINUTE);
-
-                if (startMinutes > 0 && startMinutes < minutesToCompleteBlock)
-                {
-                    minutesToCompleteBlock -= startMinutes;
-                }
-
-                blockStartTime = calStart.getTime();
-                calStart.add(Calendar.MINUTE, minutesToCompleteBlock);
-
-                if (calStart.getTimeInMillis() > calEnd.getTimeInMillis())
-                {
-                    calStart = calEnd;
-                }
-
-                blockEndTime = calStart.getTime();
-
-                event = new TimeBlockEvent(blockStartTime, blockEndTime);
-                result.add(event);
+                minutesToCompleteBlock -= startMinutes;
             }
+
+            blockStartTime = calStart.getTime();
+            calStart.add(Calendar.MINUTE, minutesToCompleteBlock);
+
+            if (calStart.getTimeInMillis() > calEnd.getTimeInMillis())
+            {
+                calStart = calEnd;
+            }
+
+            blockEndTime = calStart.getTime();
+
+            event = new TimeBlockEvent(blockStartTime, blockEndTime);
+            result.add(event);
         }
 
         return result;
