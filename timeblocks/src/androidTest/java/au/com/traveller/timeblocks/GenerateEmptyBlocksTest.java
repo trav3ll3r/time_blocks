@@ -51,9 +51,9 @@ public class GenerateEmptyBlocksTest extends InstrumentationTestCase
         assertEquals(24, result.size());
     }
 
-    public void test_1_event() throws Exception
+    public void test_1_full_hour_event() throws Exception
     {
-        this.setName("1 event, 24 blocks");
+        this.setName("1 full hour event, 24 blocks");
 
         Calendar forDate = Calendar.getInstance();
         forDate.set(2015, 6, 7, 15, 22, 18);
@@ -69,5 +69,85 @@ public class GenerateEmptyBlocksTest extends InstrumentationTestCase
         List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
 
         assertEquals(24, result.size());
+    }
+
+    public void test_1_half_hour_event() throws Exception
+    {
+        this.setName("1 half-hour event, 25 blocks");
+
+        Calendar forDate = Calendar.getInstance();
+        forDate.set(2015, 6, 7, 15, 22, 18);
+        forDate.set(Calendar.MILLISECOND, 10);
+
+        Calendar start = Calendar.getInstance();
+        start.set(2015, 6, 7, 10, 0);
+        Calendar end = Calendar.getInstance();
+        end.set(2015, 6, 7, 10, 30);
+
+        List<TimeBlockEvent> events = new ArrayList<TimeBlockEvent>();
+        events.add(new TimeBlockEvent(start, end));
+        List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
+
+        assertEquals(25, result.size());
+    }
+
+    public void test_1_hour_and_half_event() throws Exception
+    {
+        this.setName("1 hour and a half event, 24 blocks");
+
+        Calendar forDate = Calendar.getInstance();
+        forDate.set(2015, 6, 7, 15, 22, 18);
+        forDate.set(Calendar.MILLISECOND, 10);
+
+        Calendar start = Calendar.getInstance();
+        start.set(2015, 6, 7, 10, 0);
+        Calendar end = Calendar.getInstance();
+        end.set(2015, 6, 7, 11, 30);
+
+        List<TimeBlockEvent> events = new ArrayList<TimeBlockEvent>();
+        events.add(new TimeBlockEvent(start, end));
+        List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
+
+        assertEquals(24, result.size());
+    }
+
+    public void test_3_hours_event() throws Exception
+    {
+        this.setName("3 hours event, 22 blocks");
+
+        Calendar forDate = Calendar.getInstance();
+        forDate.set(2015, 6, 7, 15, 22, 18);
+        forDate.set(Calendar.MILLISECOND, 10);
+
+        Calendar start = Calendar.getInstance();
+        start.set(2015, 6, 7, 10, 0);
+        Calendar end = Calendar.getInstance();
+        end.set(2015, 6, 7, 13, 0);
+
+        List<TimeBlockEvent> events = new ArrayList<TimeBlockEvent>();
+        events.add(new TimeBlockEvent(start, end));
+        List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
+
+        assertEquals(22, result.size());
+    }
+
+    public void test_3_hours_and_half_event() throws Exception
+    {
+        this.setName("3 hours and a half event, 22 blocks");
+
+        Calendar forDate = Calendar.getInstance();
+        forDate.set(2015, 6, 7, 15, 22, 18);
+        forDate.set(Calendar.MILLISECOND, 10);
+
+        Calendar start = Calendar.getInstance();
+        start.set(2015, 6, 7, 10, 0);
+        Calendar end = Calendar.getInstance();
+        end.set(2015, 6, 7, 13, 30);
+
+        List<TimeBlockEvent> events = new ArrayList<TimeBlockEvent>();
+        events.add(new TimeBlockEvent(start, end));
+        List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
+
+        assertEquals(22, result.size());
     }
 }
