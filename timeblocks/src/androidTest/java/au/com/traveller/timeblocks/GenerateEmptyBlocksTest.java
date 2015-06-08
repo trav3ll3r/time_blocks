@@ -37,9 +37,9 @@ public class GenerateEmptyBlocksTest extends InstrumentationTestCase
         assertEquals(0, result.size());
     }
 
-    public void test_no_events() throws Exception
+    public void test_empty_events() throws Exception
     {
-        this.setName("start null, 0 blocks");
+        this.setName("empty events, 24 blocks");
 
         Calendar forDate = Calendar.getInstance();
         forDate.set(2015, 6, 7, 15, 22, 18);
@@ -51,4 +51,23 @@ public class GenerateEmptyBlocksTest extends InstrumentationTestCase
         assertEquals(24, result.size());
     }
 
+    public void test_1_event() throws Exception
+    {
+        this.setName("1 event, 24 blocks");
+
+        Calendar forDate = Calendar.getInstance();
+        forDate.set(2015, 6, 7, 15, 22, 18);
+        forDate.set(Calendar.MILLISECOND, 10);
+
+        Calendar start = Calendar.getInstance();
+        start.set(2015, 6, 7, 10, 0);
+        Calendar end = Calendar.getInstance();
+        end.set(2015, 6, 7, 11, 0);
+
+        List<TimeBlockEvent> events = new ArrayList<TimeBlockEvent>();
+        events.add(new TimeBlockEvent(start, end));
+        List<TimeBlockEvent> result = TimeBlockUtil.generateEmptyBlocks(events, forDate);
+
+        assertEquals(24, result.size());
+    }
 }
