@@ -70,7 +70,7 @@ public class TimeBlockUtil
                 midnight.set(Calendar.MINUTE, 0);
                 midnight.set(Calendar.SECOND, 0);
                 midnight.set(Calendar.MILLISECOND, 0);
-                TimeBlockEvent gap = event.createGapBeforeStart(midnight.getTime());
+                TimeBlockEvent gap = new TimeBlockEvent(midnight.getTime(), event.getStartTime());
                 if (gap.durationInMinutes() > 1)
                 {
                     result.add(gap);
@@ -84,41 +84,67 @@ public class TimeBlockUtil
         return result;
     }
 
-    public static List<TimeBlockEvent> generateEmptyBlocks(List<TimeBlockEvent> events)
+    public static List<TimeBlockEvent> generateEmptyBlocks(List<TimeBlockEvent> events, Calendar forDate)
     {
         List<TimeBlockEvent> result = new ArrayList<TimeBlockEvent>();
 
-        TimeBlockEvent prev = null;
+        TimeBlockEvent lastEvent = null;
+        Calendar calGapStart;
+        Calendar calGapEnd;
+
+        // PREVENT INVALID ARGUMENTS
+        if (events == null || forDate == null)
+        {
+            return result;
+        }
+
         for (TimeBlockEvent event : events)
         {
-            if (prev != null)
+            calGapStart = Calendar.getInstance();
+
+            calGapEnd = Calendar.getInstance();
+            calGapEnd.setTime(event.getStartTime());
+
+            if (lastEvent == null)
             {
-                int gapInMinutes = TimeBlockUtil.gapInMinutes(prev, event);
-                if (gapInMinutes > 1)
-                {
-                    TimeBlockEvent gap = new TimeBlockEvent(prev.getEndTime(), event.getStartTime());
-                    result.add(gap);
-                }
+                // FILL GAPS BETWEEN MIDNIGHT AND FIRST event
+                calGapStart.setTimeInMillis(calGapEnd.getTimeInMillis());
+                calGapStart = setToMidnight(calGapStart);
             }
             else
             {
-                // CHECK IF GAP IS NEEDED BEFORE MIDNIGHT AND FIRST EVENT
-                Calendar midnight = Calendar.getInstance();
-                midnight.setTime(event.getStartTime());
-                midnight.set(Calendar.HOUR_OF_DAY, 0);
-                midnight.set(Calendar.MINUTE, 0);
-                midnight.set(Calendar.SECOND, 0);
-                midnight.set(Calendar.MILLISECOND, 0);
-                TimeBlockEvent gap = event.createGapBeforeStart(midnight.getTime());
-                if (gap.durationInMinutes() > 1)
-                {
-                    result.add(gap);
-                }
+                calGapStart.setTime(lastEvent.getEndTime());
             }
 
-            prev = event;
+            // ADD ALL BLOCKS TO FILL THE GAP
+            result.addAll(TimeBlockUtil.generateBlocksInside(calGapStart, calGapEnd));
+
+            // ADD THE EVENT AFTER THE GAP
             result.add(event);
+
+            lastEvent = event;
         }
+
+        // ADD BLOCKS TO NEXT MIDNIGHT
+        calGapStart = Calendar.getInstance();
+        calGapEnd = Calendar.getInstance();
+        if (lastEvent != null)
+        {
+            // ADD BLOCKS STARTING AT THE END OF LAST EVENT
+            calGapStart.setTime(lastEvent.getEndTime());
+            calGapEnd.setTime(lastEvent.getEndTime());
+        }
+        else
+        {
+            // ADD BLOCKS STARTING AT THE MIDNIGHT OF forDate
+            calGapStart.setTimeInMillis(forDate.getTimeInMillis());
+            calGapEnd.setTimeInMillis(forDate.getTimeInMillis());
+
+            calGapStart = setToMidnight(calGapStart);
+        }
+        calGapEnd = setToMidnight(calGapEnd);
+        calGapEnd.add(Calendar.HOUR, 24);
+        result.addAll(TimeBlockUtil.generateBlocksInside(calGapStart, calGapEnd));
 
         return result;
     }
@@ -176,6 +202,15 @@ public class TimeBlockUtil
         }
 
         return result;
+    }
+
+    private static Calendar setToMidnight(Calendar cal)
+    {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     private static int gapInMinutes(TimeBlockEvent prev, TimeBlockEvent next)

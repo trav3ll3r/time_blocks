@@ -12,9 +12,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class TimeBlocksFragment extends Fragment
+public class TimeBlocksFragment extends Fragment implements TimeBlocks
 {
     private final String TAG = TimeBlocksFragment.class.toString();
 
@@ -32,7 +33,7 @@ public class TimeBlocksFragment extends Fragment
         this.initResources(rootView);
         this.renderTimeBlocksGuidelines();
 
-        this.refreshEvents();
+//        this.refreshEvents(Calendar.getInstance());
 
         return rootView;
     }
@@ -60,11 +61,12 @@ public class TimeBlocksFragment extends Fragment
         }
     }
 
-    private void renderTimeBlockEvents()
+    private void renderTimeBlockEvents(Calendar forDate)
     {
         this._eventBlocks = this.generateTimeBlockEvents();
-//        this._eventBlocks = TimeBlockUtil.fillEventGaps(this._eventBlocks);
-        this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks);
+        this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks, forDate);
+
+        this._timeBlockEvents.removeAllViews();
 
         for (TimeBlockEvent event : _eventBlocks)
         {
@@ -73,21 +75,27 @@ public class TimeBlocksFragment extends Fragment
         }
     }
 
-    public final void refreshEvents()
+    public final void renderEvents(Calendar forDate)
     {
-        this.getTimeBlocksData();
-        this.renderTimeBlockEvents();
+        this.renderTimeBlockEvents(forDate);
     }
 
-    //TODO: @Override
-    protected void getTimeBlocksData()
-    {
-    }
-
-    //TODO: @Override
-    protected List<TimeBlockEvent> generateTimeBlockEvents()
+    @Override
+    public List<TimeBlockEvent> generateTimeBlockEvents()
     {
         return new ArrayList<TimeBlockEvent>();
+    }
+
+    @Override
+    public View getEventView(Context context, ViewGroup parentView, TimeBlockEvent event)
+    {
+        LinearLayout eventContent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_event_content, parentView, false);
+
+        TextView tv = (TextView) eventContent.findViewById(R.id.time_block_event_label);
+        tv.setText(event.getEventLabel());
+        tv.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
+
+        return eventContent;
     }
 
     private View getCompleteEventRow(Context context, ViewGroup parentView, TimeBlockEvent event)
@@ -111,23 +119,5 @@ public class TimeBlocksFragment extends Fragment
         frame.addView(contentView);
 
         return row;
-    }
-
-    //TODO: @Override
-    protected View getEventView(Context context, ViewGroup parentView, TimeBlockEvent event)
-    {
-        LinearLayout eventContent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_event_content, parentView, false);
-
-//        int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
-//        eventHeight = (int) (eventHeight * event.durationInHours());
-//        event.setHeightInDip(eventHeight);
-//
-//        eventContent.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
-
-        TextView tv = (TextView) eventContent.findViewById(R.id.time_block_event_label);
-        tv.setText(event.getEventLabel());
-        tv.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
-
-        return eventContent;
     }
 }

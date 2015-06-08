@@ -85,10 +85,5 @@ public class TimeBlockEvent implements Serializable
         return (millis / 1000.0) / 3600.0;
     }
 
-    public TimeBlockEvent createGapBeforeStart(Date from)
-    {
-        TimeBlockEvent result = new TimeBlockEvent(from, this.startTime);
-        result.setBackgroundColour(R.color.calendar_lesson_free);
-        return result;
-    }
+
 }
