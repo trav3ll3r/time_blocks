@@ -171,6 +171,9 @@ public class TimeBlockUtil
             return result;
         }
 
+        calStart = roundDownToWholeMinute(calStart);
+        calEnd = roundDownToWholeMinute(calEnd);
+
         if (calStart.getTimeInMillis() >= calEnd.getTimeInMillis())
         {
             return result;
@@ -204,12 +207,30 @@ public class TimeBlockUtil
         return result;
     }
 
+    /**
+     * Sets Calendar time component of SECOND and MILLISECOND to ZERO
+     * @param cal Calendar (not null)
+     * @return Calendar with (time) component "HH:mm:00.0"
+     */
+    private static Calendar roundDownToWholeMinute(Calendar cal)
+    {
+        if (cal != null)
+        {
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.SECOND, 0);
+        }
+        return cal;
+    }
+
     private static Calendar setToMidnight(Calendar cal)
     {
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        if (cal != null)
+        {
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+        }
         return cal;
     }
 
