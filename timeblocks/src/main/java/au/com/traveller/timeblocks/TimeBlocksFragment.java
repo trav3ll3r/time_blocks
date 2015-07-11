@@ -2,7 +2,7 @@ package au.com.traveller.timeblocks;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +33,6 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         this.initResources(rootView);
         this.renderTimeBlocksGuidelines();
 
-//        this.refreshEvents(Calendar.getInstance());
-
         return rootView;
     }
 
@@ -55,7 +53,7 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
             TextView tv = (TextView) guidelineView.findViewById(R.id.time_block_row);
             tv.setText(block.getTimeLabel());
-            tv.getLayoutParams().width =(int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip);
+            tv.getLayoutParams().width = (int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip);
 
             _timeBlockGuidelines.addView(guidelineView);
         }
