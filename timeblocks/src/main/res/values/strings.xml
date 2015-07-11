@@ -3,4 +3,5 @@
     <string name="app_name">ACTIVITY_ENTRY_NAME</string>
     <string name="tb_example_block_mark">12:00</string>
     <string name="tb_example_event">Event at 12:00</string>
+    <string name="heading_example_2">Sunday</string>
 </resources>

@@ -1,16 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent">
+        android:orientation="vertical">
 
     <RelativeLayout
+            android:id="@+id/time_blocks_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"/>
+
+    <!--android:layout_below="@id/time_blocks_heading"-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:layout_below="@id/time_blocks_heading">
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+<!--
+        <RelativeLayout
+                android:id="@+id/time_blocks_heading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+-->
+
+        <!--android:layout_below="@id/time_blocks_heading"-->
         <LinearLayout
                 android:id="@+id/time_blocks_guidelines"
                 android:layout_width="match_parent"
@@ -25,4 +47,6 @@
 
     </RelativeLayout>
 
-</ScrollView>
+    </ScrollView>
+
+</RelativeLayout>

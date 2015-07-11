@@ -1,11 +1,14 @@
 package au.com.traveller.timeblocks;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,6 +25,7 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
     private List<TimeBlock> _guidelineBlocks;
     private List<TimeBlockEvent> _eventBlocks;
 
+    private RelativeLayout _timeBlockHeading;
     private LinearLayout _timeBlockGuidelines;
     private LinearLayout _timeBlockEvents;
 
@@ -38,6 +42,7 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
     private void initResources(View rootView)
     {
+        _timeBlockHeading    = (RelativeLayout) rootView.findViewById(R.id.time_blocks_heading);
         _timeBlockGuidelines = (LinearLayout) rootView.findViewById(R.id.time_blocks_guidelines);
         _timeBlockEvents     = (LinearLayout) rootView.findViewById(R.id.time_blocks_events);
     }
@@ -59,6 +64,29 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         }
     }
 
+    private void renderTimeBlockHeading(Calendar forDate)
+    {
+        if (this.getShowHeading())
+        {
+            LayoutInflater inflater = LayoutInflater.from(getActivity());
+            final ViewGroup v = this.getHeadingView(inflater, _timeBlockHeading, forDate);
+
+            this.resizeScheduleHeading(v);
+        }
+    }
+
+    private void resizeScheduleHeading(ViewGroup v)
+    {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) _timeBlockHeading.getLayoutParams();
+//        params.height = v.getHeight();
+        int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
+        params.height = UiUtil.dipToPixels(getActivity(), eventHeight);
+        _timeBlockHeading.setLayoutParams(params);
+
+        _timeBlockHeading.removeAllViews();
+        _timeBlockHeading.addView(v);
+    }
+
     private void renderTimeBlockEvents(Calendar forDate)
     {
         this._eventBlocks = this.generateTimeBlockEvents();
@@ -73,8 +101,22 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         }
     }
 
+    public final boolean getShowHeading()
+    {
+        return true;
+    }
+
+    public final ViewGroup getHeadingView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
+    {
+        LinearLayout v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
+        TextView t = (TextView) v.findViewById(R.id.heading_label);
+        t.setText(String.format("%s-%s-%s", forDate.get(Calendar.YEAR), forDate.get(Calendar.MONTH)+1, forDate.get(Calendar.DAY_OF_MONTH)));
+        return v;
+    }
+
     public final void renderEvents(Calendar forDate)
     {
+        this.renderTimeBlockHeading(forDate);
         this.renderTimeBlockEvents(forDate);
     }
 
