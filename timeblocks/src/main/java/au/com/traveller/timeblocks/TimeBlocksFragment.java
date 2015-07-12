@@ -17,13 +17,13 @@ import java.util.List;
 
 public class TimeBlocksFragment extends Fragment implements TimeBlocks
 {
-    private final String TAG = TimeBlocksFragment.class.toString();
+    protected String TAG = TimeBlocksFragment.class.toString();
 
     // FRAGMENT ARGUMENTS
-    private static final String ARG_FOR_DATE = "for_date";
+    protected static final String ARG_FOR_DATE = "for_date";
 
     // FRAGMENT PROPERTIES (DEFINED VIA ARGUMENTS)
-    private Calendar _forDate;
+    protected Calendar _forDate;
 
     private List<TimeBlock> _guidelineBlocks;
     private List<TimeBlockEvent> _eventBlocks;
