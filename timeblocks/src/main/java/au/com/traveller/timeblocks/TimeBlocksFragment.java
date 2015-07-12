@@ -1,14 +1,11 @@
 package au.com.traveller.timeblocks;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -22,6 +19,12 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 {
     private final String TAG = TimeBlocksFragment.class.toString();
 
+    // FRAGMENT ARGUMENTS
+    private static final String ARG_FOR_DATE = "for_date";
+
+    // FRAGMENT PROPERTIES (DEFINED VIA ARGUMENTS)
+    private Calendar _forDate;
+
     private List<TimeBlock> _guidelineBlocks;
     private List<TimeBlockEvent> _eventBlocks;
 
@@ -29,12 +32,32 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
     private LinearLayout _timeBlockGuidelines;
     private LinearLayout _timeBlockEvents;
 
+    public static TimeBlocksFragment newInstance(Calendar forDate)
+    {
+        TimeBlocksFragment f = new TimeBlocksFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_FOR_DATE, forDate);
+        f.setArguments(args);
+        return f;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null)
+        {
+            this._forDate = (Calendar) getArguments().getSerializable(ARG_FOR_DATE);
+        }
+    }
+
     @Override
     final public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.tb_fragment_one_day, container, false);
 
         this.initResources(rootView);
+        this.renderTimeBlockHeading(this._forDate);
         this.renderTimeBlocksGuidelines();
 
         return rootView;
@@ -66,10 +89,10 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
     private void renderTimeBlockHeading(Calendar forDate)
     {
-        if (this.getShowHeading())
+        if (this.getShowPageHeader())
         {
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            final ViewGroup v = this.getHeadingView(inflater, _timeBlockHeading, forDate);
+            final ViewGroup v = this.getPageHeaderView(inflater, _timeBlockHeading, forDate);
 
             this.resizeScheduleHeading(v);
         }
@@ -87,10 +110,10 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         _timeBlockHeading.addView(v);
     }
 
-    private void renderTimeBlockEvents(Calendar forDate)
+    private void renderTimeBlockEvents()
     {
         this._eventBlocks = this.generateTimeBlockEvents();
-        this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks, forDate);
+        this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks, this._forDate);
 
         this._timeBlockEvents.removeAllViews();
 
@@ -101,12 +124,12 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         }
     }
 
-    public boolean getShowHeading()
+    public boolean getShowPageHeader()
     {
         return true;
     }
 
-    public ViewGroup getHeadingView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
+    public ViewGroup getPageHeaderView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
     {
         LinearLayout v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
         TextView t = (TextView) v.findViewById(R.id.heading_label);
@@ -114,10 +137,9 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         return v;
     }
 
-    public final void renderEvents(Calendar forDate)
+    public final void renderEvents()
     {
-        this.renderTimeBlockHeading(forDate);
-        this.renderTimeBlockEvents(forDate);
+        this.renderTimeBlockEvents();
     }
 
     @Override
