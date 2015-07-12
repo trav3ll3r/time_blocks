@@ -101,12 +101,12 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         }
     }
 
-    public final boolean getShowHeading()
+    public boolean getShowHeading()
     {
         return true;
     }
 
-    public final ViewGroup getHeadingView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
+    public ViewGroup getHeadingView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
     {
         LinearLayout v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
         TextView t = (TextView) v.findViewById(R.id.heading_label);
