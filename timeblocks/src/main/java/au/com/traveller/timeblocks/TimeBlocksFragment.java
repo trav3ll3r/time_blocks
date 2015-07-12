@@ -11,9 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class TimeBlocksFragment extends Fragment implements TimeBlocks
 {
@@ -132,8 +134,13 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
     public ViewGroup getPageHeaderView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
     {
         LinearLayout v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
-        TextView t = (TextView) v.findViewById(R.id.heading_label);
-        t.setText(String.format("%s-%s-%s", forDate.get(Calendar.YEAR), forDate.get(Calendar.MONTH)+1, forDate.get(Calendar.DAY_OF_MONTH)));
+        TextView t1 = (TextView) v.findViewById(R.id.heading_label_1);
+        TextView t2 = (TextView) v.findViewById(R.id.heading_label_2);
+
+        SimpleDateFormat sdfFullDate = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+        SimpleDateFormat sdfWeekName = new SimpleDateFormat("EEEE", Locale.getDefault());
+        t1.setText(sdfFullDate.format(forDate.getTime()));
+        t2.setText(sdfWeekName.format(forDate.getTime()));
         return v;
     }
 
