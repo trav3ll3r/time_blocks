@@ -1,8 +1,10 @@
 package au.com.traveller.timeblocks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,12 +56,18 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
     }
 
     @Override
+    public void onAttach(Activity activity)
+    {
+        super.onAttach(activity);
+    }
+
+    @Override
     final public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View rootView = inflater.inflate(R.layout.tb_fragment_one_day, container, false);
 
         this.initResources(rootView);
-        this.renderTimeBlockHeading(this._forDate);
+        this.renderTimeBlockPageHeader();
         this.renderTimeBlocksGuidelines();
 
         return rootView;
@@ -89,12 +97,22 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
         }
     }
 
-    private void renderTimeBlockHeading(Calendar forDate)
+    private void renderTimeBlockPageHeader()
     {
         if (this.getShowPageHeader())
         {
+            if (this._forDate == null)
+            {
+                this.errorHandler("Error in renderTimeBlockPageHeader", new NullPointerException("_forDate is null"));
+            }
+
+            if (getActivity() == null)
+            {
+                this.errorHandler("Error in renderTimeBlockPageHeader", new NullPointerException("getActivity() returned null"));
+            }
+
             LayoutInflater inflater = LayoutInflater.from(getActivity());
-            final ViewGroup v = this.getPageHeaderView(inflater, _timeBlockHeading, forDate);
+            final ViewGroup v = this.getPageHeaderView(inflater, _timeBlockHeading, this._forDate);
 
             this.resizeScheduleHeading(v);
         }
@@ -114,6 +132,8 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
     private void renderTimeBlockEvents()
     {
+        Log.i(TAG, "renderTimeBlockEvents for date: " + UiUtil.date2string(this._forDate));
+
         this._eventBlocks = this.generateTimeBlockEvents();
         this._eventBlocks = TimeBlockUtil.generateEmptyBlocks(this._eventBlocks, this._forDate);
 
@@ -121,8 +141,11 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
         for (TimeBlockEvent event : _eventBlocks)
         {
-            View eventView = getCompleteEventRow(getActivity(), _timeBlockEvents, event);
-            this._timeBlockEvents.addView(eventView);
+            View eventView = this.getCompleteEventRow(getActivity(), _timeBlockEvents, event);
+            if (eventView != null)
+            {
+                this._timeBlockEvents.addView(eventView);
+            }
         }
     }
 
@@ -133,14 +156,22 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
 
     public ViewGroup getPageHeaderView(LayoutInflater inflater, ViewGroup parent, Calendar forDate)
     {
-        LinearLayout v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
-        TextView t1 = (TextView) v.findViewById(R.id.heading_label_1);
-        TextView t2 = (TextView) v.findViewById(R.id.heading_label_2);
+        ViewGroup v;
+        try
+        {
+            v = (LinearLayout) inflater.inflate(R.layout.tb_part_heading, parent, false);
+            TextView t1 = (TextView) v.findViewById(R.id.heading_label_1);
+            TextView t2 = (TextView) v.findViewById(R.id.heading_label_2);
 
-        SimpleDateFormat sdfFullDate = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-        SimpleDateFormat sdfWeekName = new SimpleDateFormat("EEEE", Locale.getDefault());
-        t1.setText(sdfFullDate.format(forDate.getTime()));
-        t2.setText(sdfWeekName.format(forDate.getTime()));
+            t1.setText(UiUtil.date2string(forDate));
+            t2.setText(UiUtil.date2weekday(forDate));
+        }
+        catch (Exception ex)
+        {
+            v = null;
+            this.errorHandler("Failed to render PageHeaderView", ex);
+        }
+
         return v;
     }
 
@@ -156,37 +187,71 @@ public class TimeBlocksFragment extends Fragment implements TimeBlocks
     }
 
     @Override
-    public View getEventView(Context context, ViewGroup parentView, TimeBlockEvent event)
+    public ViewGroup getEventView(LayoutInflater inflater, ViewGroup parentView, TimeBlockEvent event)
     {
-        LinearLayout eventContent = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_event_content, parentView, false);
+        ViewGroup v;
+        try
+        {
+            v = (LinearLayout) inflater.inflate(R.layout.tb_part_event_content, parentView, false);
 
-        TextView tv = (TextView) eventContent.findViewById(R.id.time_block_event_label);
-        tv.setText(event.getEventLabel());
-        tv.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
+            TextView tv = (TextView) v.findViewById(R.id.time_block_event_label);
+            tv.setText(event.getEventLabel());
+            tv.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
+        }
+        catch (Exception ex)
+        {
+            v = null;
+            this.errorHandler("Error in getEventView", ex);
+        }
 
-        return eventContent;
+        return v;
     }
 
-    private View getCompleteEventRow(Context context, ViewGroup parentView, TimeBlockEvent event)
+    private ViewGroup getCompleteEventRow(Context context, ViewGroup parentView, TimeBlockEvent event)
     {
-        ViewGroup row = (RelativeLayout) LayoutInflater.from(context).inflate(R.layout.tb_part_full_event, parentView, false);
+        ViewGroup v;
+        try
+        {
+            LayoutInflater inflater = LayoutInflater.from(context);
 
-        int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
-        eventHeight = (int) (eventHeight * event.durationInHours());
-        event.setHeightInDip(eventHeight);
+            v = (RelativeLayout) inflater.inflate(R.layout.tb_part_full_event, parentView, false);
 
-        row.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
+            int eventHeight = (int) getResources().getDimension(R.dimen.tb_block_hour_height_dip);
+            eventHeight = (int) (eventHeight * event.durationInHours());
+            event.setHeightInDip(eventHeight);
 
-        FrameLayout frame = (FrameLayout) row.findViewById(R.id.frame_time_block_event);
-        frame.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
+            v.getLayoutParams().height = UiUtil.dipToPixels(context, event.getHeightInDip());
 
-        // SET CONTENT BACKGROUND
-        View contentView = getEventView(context, row, event);
-        contentView.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
+            FrameLayout frame = (FrameLayout) v.findViewById(R.id.frame_time_block_event);
+            frame.setPadding((int) getResources().getDimension(R.dimen.tb_block_indicator_width_dip), 1, 1, 1);
 
-        // ADD THE EVENT CONTENT VIEW
-        frame.addView(contentView);
+            // SET CONTENT BACKGROUND
+            View contentView = this.getEventView(inflater, v, event);
+            if (contentView != null)
+            {
+                contentView.setBackgroundColor(getResources().getColor(event.getBackgroundColour()));
 
-        return row;
+                // ADD THE EVENT CONTENT VIEW
+                frame.addView(contentView);
+            }
+        }
+        catch (Exception ex)
+        {
+            v = null;
+            this.errorHandler(String.format("Error in getCompleteEventRow for: %s. Are you sure the fragment has been initialised and/or has not been destroyed?", UiUtil.date2string(this._forDate)), ex);
+        }
+
+        return v;
+    }
+
+    public void errorHandler(final String message, final Exception ex)
+    {
+        String exceptionMessage = "";
+        if (ex != null && ex.getMessage() != null)
+        {
+            exceptionMessage = ex.getMessage();
+        }
+        String log = String.format("%s: %s", message, exceptionMessage);
+        Log.e(TAG, log);
     }
 }
